@@ -2,12 +2,12 @@ import React from 'react';
 import { StyledButton } from './styles';
 import LoadingSpinner from '../LoadingSpinner';
 
-const Button = React.memo(({ children, isLoading, variant = 'primary', fullWidth = false, ...props }) => {
+function Button({ children, isLoading, variant = 'primary', fullWidth = false, ...props }) {
   return (
     <StyledButton 
       {...props} 
       disabled={isLoading} 
-      $variant={variant} // using transient props here and below to avoid console warnings from styled components since both variand and fullWidth are not valid attributes
+      $variant={variant} // using transient props here and below to avoid console warnings from styled components since both variant and fullWidth are not valid attributes
       $fullWidth={fullWidth}
     >
       {isLoading ? (
@@ -17,6 +17,6 @@ const Button = React.memo(({ children, isLoading, variant = 'primary', fullWidth
       )}
     </StyledButton>
   );
-});
+}
 
-export default Button;
+export default React.memo(Button);

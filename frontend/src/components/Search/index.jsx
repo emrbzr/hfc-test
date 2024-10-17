@@ -4,7 +4,7 @@ import { SearchContainer, SearchInputWrapper, SearchInput, ClearButton } from '.
 import Button from '../Button';
 import { searchContent, clearSearch } from '../../redux/actions/user-actions';
 
-const Search = React.memo(() => {
+function Search() {
   const [searchTerm, setSearchTerm] = useState('');
   const dispatch = useDispatch();
   const isSearching = useSelector(state => state.dashboard.isLoading);
@@ -47,6 +47,6 @@ const Search = React.memo(() => {
       <Button onClick={handleSearch} isLoading={isSearching}>SEARCH</Button>
     </SearchContainer>
   );
-});
+}
 
-export default Search;
+export default React.memo(Search);
