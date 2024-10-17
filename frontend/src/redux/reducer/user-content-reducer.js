@@ -8,7 +8,8 @@ import {
   UPDATE_CONTENT_STATUS_FAILURE,
   CLEAR_SEARCH,
   CLEAR_UPDATE_ERROR,
-  CLEAR_USER_CONTENT
+  CLEAR_USER_CONTENT,
+  SET_SEARCH_TERM
 } from '../action-types/user-content-action-types';
 
 const initialState = {
@@ -18,7 +19,8 @@ const initialState = {
   isSearching: false,
   hasSearched: false,
   updatingContentStatus: {},
-  updateErrors: {}
+  updateErrors: {},
+  searchTerm: ''
 };
 
 function userContentReducer(state = initialState, action) {
@@ -116,13 +118,19 @@ function userContentReducer(state = initialState, action) {
         ...state,
         searchResults: [],
         isSearching: false,
-        hasSearched: false
+        hasSearched: false,
+        searchTerm: ''
       };
     case CLEAR_USER_CONTENT:
       return {
         ...state,
         userContent: {},
         isLoadingUserContent: {}
+      };
+    case SET_SEARCH_TERM:
+      return {
+        ...state,
+        searchTerm: action.payload,
       };
     default:
       return state;

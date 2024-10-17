@@ -1,13 +1,13 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { SearchContainer, SearchInputWrapper, SearchInput, ClearButton } from './styles';
 import Button from '../Button';
-import { searchContent, clearSearch } from '../../redux/actions/user-actions';
+import { searchContent, clearSearch, setSearchTerm } from '../../redux/actions/user-actions';
 
 function Search() {
-  const [searchTerm, setSearchTerm] = useState('');
   const dispatch = useDispatch();
   const isSearching = useSelector(state => state.dashboard.isLoading);
+  const searchTerm = useSelector(state => state.userContent.searchTerm);
 
   const handleSearch = useCallback(() => {
     if (searchTerm.trim()) {
@@ -16,7 +16,6 @@ function Search() {
   }, [dispatch, searchTerm]);
 
   const handleClearSearch = useCallback(() => {
-    setSearchTerm('');
     dispatch(clearSearch());
   }, [dispatch]);
 
@@ -27,8 +26,8 @@ function Search() {
   }, [handleSearch]);
 
   const handleInputChange = useCallback((e) => {
-    setSearchTerm(e.target.value);
-  }, []);
+    dispatch(setSearchTerm(e.target.value));
+  }, [dispatch]);
 
   return (
     <SearchContainer>

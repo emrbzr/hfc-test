@@ -9,7 +9,8 @@ import {
   UPDATE_CONTENT_STATUS_FAILURE,
   CLEAR_SEARCH,
   CLEAR_UPDATE_ERROR,
-  CLEAR_USER_CONTENT
+  CLEAR_USER_CONTENT,
+  SET_SEARCH_TERM
 } from '../action-types/user-content-action-types';
 import { DashboardActions } from "../action-types/dashboard-action-types";
 import { onLoadDashboardUsers } from './dashboard-actions';
@@ -65,7 +66,13 @@ export const updateContentStatus = (contentId, status) => async (dispatch) => {
   }
 };
 
+export const setSearchTerm = (term) => ({
+  type: SET_SEARCH_TERM,
+  payload: term,
+});
+
 export const clearSearch = () => (dispatch) => {
+  dispatch(setSearchTerm(''));
   dispatch({ type: CLEAR_SEARCH });
   dispatch({ type: CLEAR_USER_CONTENT });
   dispatch(onLoadDashboardUsers());
