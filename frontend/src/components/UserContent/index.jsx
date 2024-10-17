@@ -19,20 +19,6 @@ function UserContent({ users }) {
     dispatch(updateContentStatus(id, 'rejected'));
   }, [dispatch]);
 
-  const renderButtons = useCallback((user) => {
-    const rejectText = 'REJECT';
-    const approveText = 'APPROVE';
-    const isUpdating = updatingContentStatus[user.id] || false;
-    const error = updateErrors[user.id];
-
-    return (
-      <>
-        {renderButtonsBasedOnStatus(user, isUpdating, rejectText, approveText)}
-        {error && <ErrorMessage>{error}</ErrorMessage>}
-      </>
-    );
-  }, [handleApprove, handleReject, updatingContentStatus, updateErrors]);
-
   const renderButtonsBasedOnStatus = useCallback((user, isUpdating, rejectText, approveText) => {
     switch (user?.status?.toUpperCase()) {
       case 'PENDING':
@@ -78,6 +64,20 @@ function UserContent({ users }) {
         return null;
     }
   }, [handleApprove, handleReject]);
+
+  const renderButtons = useCallback((user) => {
+    const rejectText = 'REJECT';
+    const approveText = 'APPROVE';
+    const isUpdating = updatingContentStatus[user.id] || false;
+    const error = updateErrors[user.id];
+
+    return (
+      <>
+        {renderButtonsBasedOnStatus(user, isUpdating, rejectText, approveText)}
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+      </>
+    );
+  }, [renderButtonsBasedOnStatus, updatingContentStatus, updateErrors]);
 
   return (
     <UserContentContainer>

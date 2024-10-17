@@ -10,8 +10,8 @@ function Search() {
   const searchTerm = useSelector(state => state.userContent.searchTerm);
 
   const handleSearch = useCallback(() => {
-    if (searchTerm.trim()) {
-      dispatch(searchContent(searchTerm));
+    if (searchTerm && searchTerm.trim()) {
+      dispatch(searchContent(searchTerm.trim()));
     }
   }, [dispatch, searchTerm]);
 
@@ -35,7 +35,7 @@ function Search() {
         <SearchInput
           type="text"
           placeholder="Search users"
-          value={searchTerm}
+          value={searchTerm || ''}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
         />
@@ -43,7 +43,9 @@ function Search() {
           <ClearButton onClick={handleClearSearch}>×</ClearButton>
         )}
       </SearchInputWrapper>
-      <Button onClick={handleSearch} isLoading={isSearching}>SEARCH</Button>
+      <Button onClick={handleSearch} isLoading={isSearching} disabled={!searchTerm || !searchTerm.trim()}>
+        SEARCH
+      </Button>
     </SearchContainer>
   );
 }
