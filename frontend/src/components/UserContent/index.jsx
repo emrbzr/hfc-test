@@ -1,31 +1,53 @@
-import React from 'react';
-import { UserContentContainer, ContentItem, ImageContainer, StatusBadge, Title, ButtonContainer, Divider } from './styles';
+import React, { useCallback, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { UserContentContainer, ContentItem, ImageContainer, StatusBadge, Title, ButtonContainer, Divider, ErrorMessage } from './styles';
 import Button from '../Button';
+import { updateContentStatus } from '../../redux/actions/user-actions';
 
-function UserContent({ content }) {
-  const handleApprove = (id) => {
-    
-  };
+function UserContent({ users }) {
+  const dispatch = useDispatch();
+  const userContentState = useSelector(state => state.userContent);
 
-  const handleReject = (id) => {
-    
-  };
+  const updatingContentStatus = useMemo(() => userContentState.updatingContentStatus || {}, [userContentState.updatingContentStatus]);
+  const updateErrors = useMemo(() => userContentState.updateErrors || {}, [userContentState.updateErrors]);
 
-  const renderButtons = (user) => {
+  const handleApprove = useCallback((id) => {
+    dispatch(updateContentStatus(id, 'approved'));
+  }, [dispatch]);
+
+  const handleReject = useCallback((id) => {
+    dispatch(updateContentStatus(id, 'rejected'));
+  }, [dispatch]);
+
+  const renderButtons = useCallback((user) => {
     const rejectText = 'REJECT';
     const approveText = 'APPROVE';
-    switch (user?.status.toUpperCase()) {
+    const isUpdating = updatingContentStatus[user.id] || false;
+    const error = updateErrors[user.id];
+
+    return (
+      <>
+        {renderButtonsBasedOnStatus(user, isUpdating, rejectText, approveText)}
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+      </>
+    );
+  }, [handleApprove, handleReject, updatingContentStatus, updateErrors]);
+
+  const renderButtonsBasedOnStatus = useCallback((user, isUpdating, rejectText, approveText) => {
+    switch (user?.status?.toUpperCase()) {
       case 'PENDING':
         return (
           <>
             <Button 
               onClick={() => handleReject(user.id)} 
               variant="reject"
+              isLoading={isUpdating}
             >
               {rejectText}
             </Button>
             <Button 
               onClick={() => handleApprove(user.id)} 
+              isLoading={isUpdating}
             >
               {approveText}
             </Button>
@@ -37,6 +59,7 @@ function UserContent({ content }) {
             onClick={() => handleReject(user.id)} 
             variant="reject"
             fullWidth
+            isLoading={isUpdating}
           >
             {rejectText}
           </Button>
@@ -46,6 +69,7 @@ function UserContent({ content }) {
           <Button 
             onClick={() => handleApprove(user.id)} 
             fullWidth
+            isLoading={isUpdating}
           >
             {approveText}
           </Button>
@@ -53,11 +77,11 @@ function UserContent({ content }) {
       default:
         return null;
     }
-  };
+  }, [handleApprove, handleReject]);
 
   return (
     <UserContentContainer>
-      {content.map((user) => (
+      {users.map((user) => (
         <ContentItem key={user.id}>
           <ImageContainer>
             <img 
@@ -65,7 +89,7 @@ function UserContent({ content }) {
               alt={user.title} 
               loading="lazy" 
             />
-            <StatusBadge status={user.status}>{user.status}</StatusBadge>
+            <StatusBadge $status={user.status}>{user.status}</StatusBadge>
             <Title>{user.title}</Title>
           </ImageContainer>
           <Divider />

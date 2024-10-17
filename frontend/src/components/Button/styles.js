@@ -31,8 +31,8 @@ export const StyledButton = styled.button`
   justify-content: center;
   align-items: center;
   text-transform: uppercase;
-  ${props => buttonVariants[props.variant || 'primary']}
-  ${props => props.fullWidth && 'width: 100%;'}
+  ${props => buttonVariants[props.$variant || 'primary']}
+  ${props => props.$fullWidth && 'width: 100%;'}
 
   &:disabled {
     background-color: #cccccc;

@@ -27,3 +27,12 @@ export const UserName = styled.h3`
   text-align: left;
   font-weight: 500;
 `;
+
+export const NoResultsMessage = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 16px;
+  color: #666;
+`;

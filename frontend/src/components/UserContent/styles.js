@@ -57,10 +57,10 @@ export const StatusBadge = styled.span`
   font-weight: bold;
   color: #242F57;
   text-transform: uppercase;
-  background-color: ${({ status }) => 
-    status === 'approved' ? '#D6F559' : 
-    status === 'rejected' ? '#FF8686' : 
-    status === 'pending' ? '#FFF186' : '#FFFFFF'};
+  background-color: ${({ $status }) => 
+    $status === 'approved' ? '#D6F559' : 
+    $status === 'rejected' ? '#FF8686' : 
+    $status === 'pending' ? '#FFF186' : '#FFFFFF'};
 `;
 
 export const Title = styled.h3`
@@ -92,4 +92,11 @@ export const ButtonContainer = styled.div`
     flex-direction: column;
     align-items: stretch;
   }
+`;
+
+export const ErrorMessage = styled.div`
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+  text-align: center;
 `;
