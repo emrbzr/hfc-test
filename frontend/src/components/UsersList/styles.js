@@ -5,7 +5,7 @@ export const UsersListContainer = styled.div`
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  max-width: 902px;
+  max-width: 902px; // matching the 902px for the search container it is responsive if browser width changes
   margin: 0 auto;
   gap: 10px;
 `;

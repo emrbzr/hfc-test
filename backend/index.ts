@@ -26,7 +26,7 @@ app.use(
   })
 );
 
-app.use(express.json()); // Add this line to parse JSON request bodies
+app.use(express.json()); // Adding this line to parse JSON request bodies
 
 // Get users route
 app.get("/users", async (req: Request, res) => {
