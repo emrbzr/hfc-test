@@ -12,4 +12,10 @@ export const SearchInput = styled.input`
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 4px 0 0 4px;
+
+  &::placeholder {
+    font-weight: 500;
+    font-size: 18px;
+    color: #878EA7;
+  }
 `;

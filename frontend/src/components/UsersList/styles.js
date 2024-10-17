@@ -7,6 +7,7 @@ export const UsersListContainer = styled.div`
   width: 100%;
   max-width: 902px;
   margin: 0 auto;
+  gap: 10px;
 `;
 
 export const UserContainer = styled.div`
@@ -15,6 +16,7 @@ export const UserContainer = styled.div`
   align-items: flex-start;
   width: 100%;
   margin-bottom: 1.5rem;
+  gap: 10px;
 `;
 
 export const UserName = styled.h3`
@@ -23,4 +25,5 @@ export const UserName = styled.h3`
   margin: 0 0 0.5rem 0;
   padding: 0;
   text-align: left;
+  font-weight: 500;
 `;

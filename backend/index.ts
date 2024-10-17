@@ -35,21 +35,22 @@ app.get(
   "/content/:userId",
   async (
     req: Request<{
-      userId: number;
+      userId: string;
     }>,
-    res: Response<
-      {
-        id: number;
-        url: string;
-        status: string;
-        userId: number;
-      }[]
-    >
+    res: Response
   ) => {
-    const userId = req.params["userId"];
+    const userId = parseInt(req.params.userId);
 
-    // TODO: Get content for user
-    res.json([]);
+    try {
+      const userContent = await Content.findAll({
+        where: { userId: userId }
+      });
+
+      res.json(userContent);
+    } catch (error) {
+      console.error('Error fetching user content:', error);
+      res.status(500).json({ error });
+    }
   }
 );
 

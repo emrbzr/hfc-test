@@ -10,15 +10,14 @@ export const SpinnerContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 200px;
 `;
 
 export const Spinner = styled.div`
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #3498db;
+  border: ${props => props.size === 'small' ? '2px' : '4px'} solid #f3f3f3;
+  border-top: ${props => props.size === 'small' ? '2px' : '4px'} solid ${props => props.color};
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: ${props => props.size === 'small' ? '20px' : '40px'};
+  height: ${props => props.size === 'small' ? '20px' : '40px'};
   animation: ${spin} 1s linear infinite;
 `;
 
