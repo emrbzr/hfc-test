@@ -11,12 +11,12 @@ function UserContent({ users }) {
   const updatingContentStatus = useMemo(() => userContentState.updatingContentStatus || {}, [userContentState.updatingContentStatus]);
   const updateErrors = useMemo(() => userContentState.updateErrors || {}, [userContentState.updateErrors]);
 
-  const handleApprove = useCallback((id) => {
-    dispatch(updateContentStatus(id, 'approved'));
+  const handleApprove = useCallback((userId, contentId) => {
+    dispatch(updateContentStatus(userId, contentId, 'approved'));
   }, [dispatch]);
 
-  const handleReject = useCallback((id) => {
-    dispatch(updateContentStatus(id, 'rejected'));
+  const handleReject = useCallback((userId, contentId) => {
+    dispatch(updateContentStatus(userId, contentId, 'rejected'));
   }, [dispatch]);
 
   const renderButtonsBasedOnStatus = useCallback((user, isUpdating, rejectText, approveText) => {
@@ -25,14 +25,14 @@ function UserContent({ users }) {
         return (
           <>
             <Button 
-              onClick={() => handleReject(user.id)} 
+              onClick={() => handleReject(user.userId, user.id)} 
               variant="reject"
               isLoading={isUpdating}
             >
               {rejectText}
             </Button>
             <Button 
-              onClick={() => handleApprove(user.id)} 
+              onClick={() => handleApprove(user.userId, user.id)} 
               isLoading={isUpdating}
             >
               {approveText}
@@ -42,7 +42,7 @@ function UserContent({ users }) {
       case 'APPROVED':
         return (
           <Button 
-            onClick={() => handleReject(user.id)} 
+            onClick={() => handleReject(user.userId, user.id)} 
             variant="reject"
             fullWidth
             isLoading={isUpdating}
@@ -53,7 +53,7 @@ function UserContent({ users }) {
       case 'REJECTED':
         return (
           <Button 
-            onClick={() => handleApprove(user.id)} 
+            onClick={() => handleApprove(user.userId, user.id)} 
             fullWidth
             isLoading={isUpdating}
           >
@@ -90,7 +90,7 @@ function UserContent({ users }) {
               loading="lazy" 
             />
             <StatusBadge $status={user.status}>{user.status}</StatusBadge>
-            <Title>{user.title}</Title>
+            <Title>{user.title ?? 'No Title'}</Title>
           </ImageContainer>
           <Divider />
           <ButtonContainer>

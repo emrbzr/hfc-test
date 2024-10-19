@@ -6,7 +6,7 @@ import { searchContent, clearSearch, setSearchTerm } from '../../redux/actions/u
 
 function Search() {
   const dispatch = useDispatch();
-  const isSearching = useSelector(state => state.dashboard.isLoading);
+  const isSearching = useSelector(state => state.userContent.isSearching);
   const searchTerm = useSelector(state => state.userContent.searchTerm);
 
   const handleSearch = useCallback(() => {

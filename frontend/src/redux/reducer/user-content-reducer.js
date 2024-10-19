@@ -58,7 +58,9 @@ function userContentReducer(state = initialState, action) {
       return {
         ...state,
         isSearching: true,
-        hasSearched: false
+        hasSearched: false,
+        // Above value helps to keep the current searchResults while searching
+        searchResults: state.searchResults
       };
     case SEARCH_CONTENT_SUCCESS:
       return {

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { UsersListContainer, UserContainer, UserName, NoResultsMessage } from "./styles";
 import Button from "../Button";
 import { fetchUserContent, clearSearch } from "../../redux/actions/user-actions";
+import LoadingSpinner from "../LoadingSpinner";
 
 const LazyUserContent = lazy(() => import("../UserContent"));
 
@@ -11,8 +12,10 @@ function UsersList() {
   
   const userContentState = useSelector((state) => state.userContent);
   const hasSearched = useSelector((state) => state.userContent.hasSearched);
+  const isSearching = useSelector((state) => state.userContent.isSearching);
   const searchResults = useSelector((state) => state.userContent.searchResults);
   const dashboardUsers = useSelector((state) => state.dashboard.users);
+  const isLoadingDashboardUsers = useSelector((state) => state.dashboard.isLoading);
 
   const users = hasSearched ? searchResults : dashboardUsers;
 
@@ -27,6 +30,14 @@ function UsersList() {
     dispatch(clearSearch());
   }, [dispatch]);
 
+  if (isSearching) {
+    return <LoadingSpinner message="Searching..." />;
+  }
+
+  if (isLoadingDashboardUsers) {
+    return <LoadingSpinner message="Loading users..." />;
+  }
+
   if (hasSearched && users.length === 0) {
     return (
       <NoResultsMessage>
@@ -40,7 +51,11 @@ function UsersList() {
       {users.map((user) => (
         <UserContainer key={`user-${user.id}`}>
           <UserName>{user.name}</UserName>
-          {userContent[user.id] && userContent[user.id].length > 0 ? (
+          {(user.contents && user.contents.length > 0) ? (
+            <Suspense fallback={<Button isLoading />}>
+              <LazyUserContent users={user.contents} />
+            </Suspense>
+          ) : userContent[user.id] && userContent[user.id].length > 0 ? (
             <Suspense fallback={<Button isLoading />}>
               <LazyUserContent users={userContent[user.id]} />
             </Suspense>

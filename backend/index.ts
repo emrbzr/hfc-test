@@ -29,19 +29,22 @@ app.use(
 app.use(express.json()); // Adding this line to parse JSON request bodies
 
 // Get users route
-app.get("/users", async (req: Request, res) => {
-  const users = await User.findAll();
-  res.json(users);
+app.get("/users", async (req: Request, res: Response<User[] | { error: string }>) => {
+  try {
+    const users = await User.findAll();
+    res.json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 // View content for user
 app.get(
   "/content/:userId",
   async (
-    req: Request<{
-      userId: number;
-    }>,
-    res: Response
+    req: Request<{ userId: string }>,
+    res: Response<Content[] | { error: string }>
   ) => {
     const userId = req?.params?.userId;
 
@@ -53,7 +56,7 @@ app.get(
       res.json(userContent);
     } catch (error) {
       console.error('Error fetching user content:', error);
-      res.status(500).json({ error });
+      res.status(500).json({ error: "Internal server error while fetching user content" });
     }
   }
 );
@@ -62,19 +65,28 @@ app.get(
 // If the status is not valid, return 400 status code
 // If the content does not exist, return 404 status code
 // If the content is already approved, you can't change the status, return 400 status code
-app.patch("/content/:contentId/status", async (req: Request, res: Response) => {
-  const contentId = parseInt(req?.params?.contentId);
-  const { status } = req?.body;
+app.patch("/content/:userId/:contentId/status", async (
+  req: Request<{ userId: string, contentId: string }, any, { status: ContentStatus }>,
+  res: Response<Content | { error: string }>
+) => {
+  const userId = parseInt(req.params.userId);
+  const contentId = parseInt(req.params.contentId);
+  const { status } = req.body;
 
   if (!Object.values(ContentStatus).includes(status)) {
     return res.status(400).json({ error: "Invalid status" });
   }
 
   try {
-    const content = await Content.findByPk(contentId);
+    const content = await Content.findOne({
+      where: {
+        id: contentId,
+        userId: userId
+      }
+    });
 
     if (!content) {
-      return res.status(404).json({ error: "Content not found" });
+      return res.status(404).json({ error: "Content not found or does not belong to the user" });
     }
 
     if (content.status === ContentStatus.APPROVED) {
@@ -94,30 +106,10 @@ app.patch("/content/:contentId/status", async (req: Request, res: Response) => {
 // Search endpoint
 // Search by user title, user tags and content title
 
-// NOTE: Above it mentions search should also look for content title but in the PDF requirements it is saying search is only for user title and user tags so I went with the requirements. 
-// However I am sharing a version with content title search below as well, it would look like that.
+// NOTE: Above it mentions search should also look for content title but in the PDF requirements it is saying search is only for user title and user tags, however I followed the above mentioned requirements.
+// However, below I am sharing a version without content title search like the email PDF requirement.
   /*
-  await User.findAll({
-  include: [{
-    model: Content,
-    where: {
-      [Op.or]: [
-        { title: { [Op.like]: `%${query}%` } },
-        { '$user.name$': { [Op.like]: `%${query}%` } },
-        { '$user.tags$': { [Op.like]: `%${query}%` } },
-      ]
-    },
-  }],
-  */
-app.get("/search", async (req: Request, res: Response) => {
-  const { query } = req.query;
-
-  if (!query || typeof query !== 'string') {
-    return res.status(400).json({ error: "Invalid search query" });
-  }
-
-  try {
-    const users = await User.findAll({
+  const users = await User.findAll({ //This is the version for only user title and user tags search
       where: {
         [Op.or]: [
           { name: { [Op.like]: `%${query}%` } },
@@ -126,11 +118,41 @@ app.get("/search", async (req: Request, res: Response) => {
       },
       attributes: ['id', 'name', 'tags']
     });
+  */
 
-    res.json(users);
+app.get("/search", async (
+  req: Request<{}, any, any, { query: string }>,
+  res: Response<User[] | { error: string }>
+) => {
+  const { query } = req.query;
+
+  if (!query) {
+    return res.status(400).json({ error: "Invalid/missing search query" });
+  }
+
+  try {
+    const results = await User.findAll({
+      include: [{
+        model: Content,
+        required: false, // This allows users to be returned even if they don't have matching content
+        where: {
+          title: { [Op.like]: `%${query}%` }
+        },
+      }],
+      where: {
+        [Op.or]: [
+          { name: { [Op.like]: `%${query}%` } },
+          { tags: { [Op.like]: `%${query}%` } },
+          { '$contents.title$': { [Op.like]: `%${query}%` } },
+        ]
+      },
+      attributes: ['id', 'name', 'tags']
+    });
+
+    res.json(results);
   } catch (error) {
     console.error('Error searching users:', error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: "Internal server error while searching users" });
   }
 });
 

@@ -6,7 +6,8 @@ export const getUserContent = (userId) => api.get(`/content/${userId}`);
 
 export const searchContent = (query) => api.get(`/search?query=${encodeURIComponent(query)}`);
 
-export const updateContentStatus = (contentId, status) => api.patch(`/content/${contentId}/status`, { status });
+export const updateContentStatus = (userId, contentId, status) => 
+  api.patch(`/content/${userId}/${contentId}/status`, { status });
 
 export const userService = {
   getUsers,

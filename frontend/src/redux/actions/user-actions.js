@@ -29,8 +29,7 @@ export const fetchUserContent = (userId) => async (dispatch) => {
 };
 
 export const searchContent = (query) => async (dispatch) => {
-  dispatch({ type: DashboardActions.SET_LOADING_USERS, payload: true });
-  dispatch({ type: SEARCH_CONTENT_REQUEST, payload: query });
+  dispatch({ type: SEARCH_CONTENT_REQUEST });
   try {
     const { data } = await userService.searchContent(query);
     dispatch({
@@ -39,29 +38,31 @@ export const searchContent = (query) => async (dispatch) => {
     });
   } catch (error) {
     console.error('Error searching content:', error);
-  } finally {
-    dispatch({ type: DashboardActions.SET_LOADING_USERS, payload: false });
+    dispatch({
+      type: SEARCH_CONTENT_SUCCESS,
+      payload: [],
+    });
   }
 };
 
-export const updateContentStatus = (contentId, status) => async (dispatch) => {
+export const updateContentStatus = (userId, contentId, status) => async (dispatch) => {
   dispatch({ type: UPDATE_CONTENT_STATUS_REQUEST, payload: { contentId, status } });
   try {
-    const { data } = await userService.updateContentStatus(contentId, status);
+    const { data } = await userService.updateContentStatus(userId, contentId, status);
     dispatch({
       type: UPDATE_CONTENT_STATUS_SUCCESS,
       payload: data,
     });
   } catch (error) {
     console.error('Error updating content status:', error);
-    if(error.response?.status === 400) {
-    dispatch({
-    type: UPDATE_CONTENT_STATUS_FAILURE,
-    payload: { contentId, error: error.response?.data?.error || 'An error occurred' },
-    });
-    setTimeout(() => {
-    dispatch({ type: CLEAR_UPDATE_ERROR, payload: contentId });
-    }, 3000);
+    if(error.response?.status === 400 || error.response?.status === 404) {
+      dispatch({
+        type: UPDATE_CONTENT_STATUS_FAILURE,
+        payload: { contentId, error: error.response?.data?.error || 'An error occurred' },
+      });
+      setTimeout(() => {
+        dispatch({ type: CLEAR_UPDATE_ERROR, payload: contentId });
+      }, 3000);
     }
   }
 };
